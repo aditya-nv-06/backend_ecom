@@ -1,18 +1,58 @@
 # E-Commerce Backend API
 
-A RESTful API for an e-commerce application built with Express.js, PostgreSQL, and Sequelize ORM. Features JWT-based authentication with refresh tokens.
+A comprehensive RESTful API for an e-commerce application built with Express.js, PostgreSQL, and Sequelize ORM. Features JWT-based authentication with refresh tokens, shopping cart, shipping address management, and complete order processing system.
 
 ## Features
 
+### Authentication & User Management
 - ✅ User registration and authentication
 - ✅ JWT access tokens (15 minutes expiry)
 - ✅ JWT refresh tokens (7 days expiry)
 - ✅ Password hashing with bcrypt
+- ✅ Role-based access control (user/admin)
+- ✅ Google OAuth authentication
+
+### Shopping Cart
+- ✅ Add items to cart with stock validation
+- ✅ Update item quantities
+- ✅ Remove items from cart
+- ✅ View cart with product details
+- ✅ Real-time price calculations
+- ✅ Duplicate item detection
+
+### Shipping & Addresses
+- ✅ Create multiple shipping addresses
+- ✅ Set default address
+- ✅ Update address details
+- ✅ Delete addresses with active order protection
+- ✅ Comprehensive address validation
+
+### Order Management
+- ✅ Place orders from cart
+- ✅ View order history with filtering/pagination
+- ✅ Track order status
+- ✅ Update payment status
+- ✅ Cancel orders with stock restoration
+- ✅ Order analytics and summaries
+- ✅ Estimated delivery tracking
+
+### Product Management
+- ✅ Browse products with filtering
+- ✅ Product variants and specifications
+- ✅ Product images management
+- ✅ Wishlist functionality
+- ✅ Product reviews and ratings
+- ✅ Q&A support
+
+### Technical Features
 - ✅ Input validation with express-validator
 - ✅ PostgreSQL database with Sequelize ORM
-- ✅ Role-based access control (user/admin)
+- ✅ Transaction support for orders
 - ✅ Global error handling
 - ✅ CORS enabled
+- ✅ Security headers with Helmet
+- ✅ Rate limiting
+- ✅ Database indexing
 
 ## Tech Stack
 
@@ -21,6 +61,19 @@ A RESTful API for an e-commerce application built with Express.js, PostgreSQL, a
 - **JWT** for authentication
 - **bcryptjs** for password hashing
 - **express-validator** for input validation
+- **Helmet** for security headers
+- **CORS** for cross-origin requests
+
+## API Documentation
+
+### Quick Links
+- 🛒 [Cart API Documentation](./CART_API.md) - Shopping cart endpoints
+- 📍 [Shipping Address API Documentation](./SHIPPING_ADDRESS_API.md) - Address management
+- 📦 [Order API Documentation](./ORDER_API.md) - Order processing
+- 🚀 [Quick Start Guide](./QUICKSTART.md) - Get started in 5 minutes
+- 📚 [Implementation Guide](./IMPLEMENTATION_GUIDE.md) - Architecture & patterns
+- ✨ [Features Summary](./FEATURES_SUMMARY.md) - Complete feature overview
+- ✅ [Implementation Checklist](./IMPLEMENTATION_CHECKLIST.md) - What's implemented
 
 ## Getting Started
 
@@ -30,14 +83,44 @@ A RESTful API for an e-commerce application built with Express.js, PostgreSQL, a
 - PostgreSQL (v12 or higher)
 - npm or yarn
 
-### Installation
+### Quick Start (5 minutes)
 
 1. **Install dependencies:**
    ```bash
    npm install
    ```
 
-2. **Set up environment variables:**
+2. **Run migrations:**
+   ```bash
+   npm run db:migrate
+   ```
+
+3. **Start the server:**
+   ```bash
+   npm run dev
+   ```
+
+4. **Check health:**
+   ```bash
+   curl http://localhost:5000/api/health
+   ```
+
+See [QUICKSTART.md](./QUICKSTART.md) for detailed examples.
+
+### Full Installation
+
+1. **Clone repository:**
+   ```bash
+   git clone <repo-url>
+   cd backend_ecom
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables:**
    ```bash
    cp .env.example .env
    ```

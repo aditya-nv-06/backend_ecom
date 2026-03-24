@@ -2,7 +2,7 @@ const { Question, Product, User } = require("../models");
 const sendResponse = (res, { status = 200, success = true, message = "", data = null, meta = null }) =>
   res.status(status).json({ success, message, data, meta });
 
-/* ================= ASK QUESTION ================= */
+
 const askQuestion = async (req, res, next) => {
   try {
     const { productId } = req.params;
@@ -20,7 +20,7 @@ const askQuestion = async (req, res, next) => {
   }
 };
 
-/* ================= ANSWER QUESTION ================= */
+
 const answerQuestion = async (req, res, next) => {
   try {
     const { questionId } = req.params;
@@ -48,7 +48,7 @@ const answerQuestion = async (req, res, next) => {
   }
 };
 
-/* ================= GET QUESTIONS ================= */
+
 const getProductQuestions = async (req, res, next) => {
   try {
     const { productId } = req.params;
@@ -86,7 +86,7 @@ const getProductQuestions = async (req, res, next) => {
   }
 };
 
-/* ================= UPDATE QUESTION ================= */
+
 const updateQuestion = async (req, res, next) => {
   try {
     const { questionId } = req.params;

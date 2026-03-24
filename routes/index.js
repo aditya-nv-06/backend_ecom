@@ -7,6 +7,9 @@ const productVariantRoutes = require('./productVariantRoute');
 const specificationRoutes = require('./product/specifications.routes');
 const wishlistRoutes = require('./wishlis_troutes');
 const reviewRoutes = require('./Review');
+const cartRoutes = require('./cartRoutes');
+const shippingAddressRoutes = require('./shippingAddressRoutes');
+const orderRoutes = require('./orderRoutes');
 
 const router = express.Router();
 
@@ -27,5 +30,8 @@ router.use('/product-variants', productVariantRoutes);
 router.use('/specifications', specificationRoutes);
 router.use('/wishlist', wishlistRoutes);
 router.use('/reviews', reviewRoutes);
+router.use('/cart', cartRoutes);
+router.use('/shipping-addresses', shippingAddressRoutes);
+router.use('/orders', orderRoutes);
 
 module.exports = router;
