@@ -1,7 +1,8 @@
 const { Order, OrderItem, Cart, CartItem, ShippingAddress, Product, User, ProductVariant } = require('../models');
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
-const { Op, sequelize } = require('sequelize');
+const { Op, fn, col } = require('sequelize');
+const { sequelize } = require('../config/sequelize');
 
 /**
  * Get all orders for user
@@ -83,7 +84,7 @@ const getOrder = catchAsync(async (req, res, next) => {
           {
             model: ProductVariant,
             as: 'variant',
-            attributes: ['id', 'name', 'sku']
+            attributes: ['id', 'color', 'price', 'stock']
           }
         ]
       },
@@ -274,7 +275,7 @@ const placeOrder = catchAsync(async (req, res, next) => {
     }
 
     // Clear cart
-    await CartItem.destroy({ where: { cartId: cart.id } }, { transaction });
+    await CartItem.destroy({ where: { cartId: cart.id }, transaction });
     await cart.update(
       { totalItems: 0, totalPrice: 0 },
       { transaction }
@@ -362,7 +363,7 @@ const updateOrderStatus = catchAsync(async (req, res, next) => {
   // Handle cancellation
   if (status === 'cancelled') {
     updates.cancelledAt = new Date();
-    updates.paymentStatus = order.paymentStatus === 'completed' ? 'refunded' : 'cancelled';
+    updates.paymentStatus = order.paymentStatus === 'completed' ? 'refunded' : 'failed';
   }
 
   await order.update(updates);
@@ -563,7 +564,7 @@ const getOrderAnalytics = catchAsync(async (req, res, next) => {
     where: { userId },
     attributes: [
       'status',
-      [sequelize.fn('count', sequelize.col('id')), 'count']
+      [fn('count', col('id')), 'count']
     ],
     group: ['status'],
     raw: true

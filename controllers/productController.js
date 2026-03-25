@@ -15,10 +15,6 @@ const sendResponse = (res, { status = 200, success = true, message = "", data = 
   return res.status(status).json({ success, message, data, meta });
 };
 
-/* =========================================================
-   ================= CLIENT CONTROLLERS =====================
-   ========================================================= */
-
 /* ================= GET ALL PRODUCTS ================= */
 const getProducts = catchAsync(async (req, res, next) => {
     const page = Math.max(parseInt(req.query.page) || 1, 1);
@@ -144,7 +140,7 @@ const getRelatedProducts = catchAsync(async (req, res, next) => {
           isActive: true
         },
         include: ["images"],
-        order: [["soldCount", "DESC"]], // 👈 trending logic
+        order: [["soldCount", "DESC"]], 
         limit: 10
       });
     }

@@ -26,7 +26,7 @@ const getCart = catchAsync(async (req, res, next) => {
           {
             model: ProductVariant,
             as: 'variant',
-            attributes: ['id', 'name', 'sku', 'stock']
+            attributes: ['id', 'color', 'price', 'stock']
           }
         ]
       }
@@ -163,7 +163,7 @@ const addToCart = catchAsync(async (req, res, next) => {
           {
             model: ProductVariant,
             as: 'variant',
-            attributes: ['id', 'name', 'sku', 'stock']
+            attributes: ['id', 'color', 'price', 'stock']
           }
         ]
       }
@@ -265,7 +265,7 @@ const updateCartItem = catchAsync(async (req, res, next) => {
           {
             model: ProductVariant,
             as: 'variant',
-            attributes: ['id', 'name', 'sku', 'stock']
+            attributes: ['id', 'color', 'price', 'stock']
           }
         ]
       }

@@ -1,7 +1,7 @@
 const express = require('express');
 const { body, param, query } = require('express-validator');
 const orderController = require('../controllers/orderController');
-const { protect } = require('../middleware/auth.middleware');
+const { protect, restrictTo } = require('../middleware/auth.middleware');
 const { validate } = require('../middleware/validation.middleware');
 
 const router = express.Router();
@@ -110,12 +110,14 @@ router.post('/place', placeOrderValidation, validate, orderController.placeOrder
 
 router.patch(
   '/:orderId/status',
+  restrictTo('admin'),
   updateOrderStatusValidation,
   validate,
   orderController.updateOrderStatus
 );
 router.patch(
   '/:orderId/payment-status',
+  restrictTo('admin'),
   updatePaymentStatusValidation,
   validate,
   orderController.updatePaymentStatus
