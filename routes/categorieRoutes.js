@@ -12,6 +12,8 @@ const router = express.Router();
 
 // Public routes
 router.get("/", getCategories);
+
+//this is for dashbord related api  based on product type it will fetchdata
 router.get("/:slug", getCategoryBySlug);
 
 // Admin routes (protected)
