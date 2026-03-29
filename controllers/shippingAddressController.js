@@ -4,6 +4,15 @@ const catchAsync = require('../utils/catchAsync');
 const { Op } = require('sequelize');
 
 /**
+ * =========================================================================
+ *  ADDRESS DETAILS DIVISIONS:
+ *  - SHIPPING DETAILS: Physical location (Address, City, State, ZIP)
+ *  - DELIVERY DETAILS: Recipient & Service info (Name, Phone, Email, Type)
+ * =========================================================================
+ */
+
+
+/**
  * Get all shipping addresses for user
  * GET /api/shipping-addresses
  */
@@ -58,15 +67,20 @@ const getShippingAddress = catchAsync(async (req, res, next) => {
 const createShippingAddress = catchAsync(async (req, res, next) => {
   const userId = req.user.id;
   const {
+    /** DELIVERY DETAILS (Recipient & Contact) **/
     fullName,
     phoneNumber,
     email,
+
+    /** SHIPPING DETAILS (Location Information) **/
     addressLine1,
     addressLine2,
     city,
     state,
     postalCode,
     country,
+
+    /** PREFERENCES **/
     isDefault,
     addressType
   } = req.body;
@@ -103,15 +117,20 @@ const createShippingAddress = catchAsync(async (req, res, next) => {
 
   const address = await ShippingAddress.create({
     userId,
+    // Delivery Details
     fullName,
     phoneNumber: phoneNumber.trim(),
     email: email.toLowerCase(),
+    
+    // Shipping Details
     addressLine1,
     addressLine2,
     city,
     state,
     postalCode: postalCode.trim(),
     country: country || 'India',
+    
+    // Preferences
     isDefault: isDefault || false,
     addressType: addressType || 'home'
   });
@@ -133,6 +152,13 @@ const updateShippingAddress = catchAsync(async (req, res, next) => {
   const { addressId } = req.params;
   const userId = req.user.id;
   const updates = req.body;
+
+  /** 
+   * ADDRESS FIELD CATEGORIES IN UPDATES:
+   * - Delivery Details: fullName, phoneNumber, email, addressType
+   * - Shipping Details: addressLine1, addressLine2, city, state, postalCode, country
+   * - Preferences: isDefault
+   */
 
   // Remove userId from updates for security
   delete updates.userId;
