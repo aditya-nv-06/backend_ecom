@@ -35,6 +35,11 @@ const getOrders = catchAsync(async (req, res, next) => {
             model: Product,
             as: 'product',
             attributes: ['id', 'name', 'price']
+          },
+          {
+            model: ProductVariant,
+            as: 'variant',
+            attributes: ['id', 'color', 'size']
           }
         ]
       },
@@ -85,7 +90,7 @@ const getOrder = catchAsync(async (req, res, next) => {
           {
             model: ProductVariant,
             as: 'variant',
-            attributes: ['id', 'name', 'sku']
+            attributes: ['id', 'color', 'size']
           }
         ]
       },
@@ -329,6 +334,11 @@ const placeOrder = catchAsync(async (req, res, next) => {
               model: Product,
               as: 'product',
               attributes: ['id', 'name']
+            },
+            {
+              model: ProductVariant,
+              as: 'variant',
+              attributes: ['id', 'color', 'size']
             }
           ]
         },
@@ -764,7 +774,10 @@ const buyNow = catchAsync(async (req, res, next) => {
         {
           model: OrderItem,
           as: 'items',
-          include: [{ model: Product, as: 'product', attributes: ['id', 'name'] }]
+          include: [
+            { model: Product, as: 'product', attributes: ['id', 'name'] },
+            { model: ProductVariant, as: 'variant', attributes: ['id', 'color', 'size'] }
+          ]
         },
         { model: ShippingAddress, as: 'shippingAddress' }
       ]
