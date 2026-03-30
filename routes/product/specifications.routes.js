@@ -30,7 +30,9 @@ router.get("/:id", getSpecificationById);
 // Create specification (admin only)
 router.post("/", protect, restrictTo("admin"), createSpecification);
 
+
 // Update specification (admin only)
+router.put("/:id", protect, restrictTo("admin"), updateSpecification);
 router.patch("/:id", protect, restrictTo("admin"), updateSpecification);
 
 // Delete specification (admin only)

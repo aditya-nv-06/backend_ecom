@@ -15,6 +15,10 @@ const ProductVariant = sequelize.define("ProductVariant", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  size: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   stock: {
     type: DataTypes.INTEGER,
     allowNull: false,

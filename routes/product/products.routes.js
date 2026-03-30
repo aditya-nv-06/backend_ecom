@@ -1,6 +1,5 @@
 const express = require("express");
 const { query, param } = require("express-validator");
-
 const { validate } = require("../../middleware/validation.middleware");
 
 const {
@@ -11,11 +10,11 @@ const {
   getFullProductDetails
 } = require("../../controllers/productController");
 
+const catchAsync = require("../../utils/catchAsync");
+
 const router = express.Router();
 
 /* ================= PUBLIC ROUTES ================= */
-
-
 
 // 🔍 SEARCH
 router.get(
@@ -26,19 +25,19 @@ router.get(
     query("limit").optional().isInt({ min: 1, max: 100 })
   ],
   validate,
-  searchProducts
+  catchAsync(searchProducts) // wrap async in catchAsync
 );
 
 // 📦 LIST PRODUCTS
-router.get("/", getProducts);
+router.get("/", catchAsync(getProducts));
 
 // 📄 FULL DETAILS
-router.get("/:id/full", getFullProductDetails);
+router.get("/:id/full", catchAsync(getFullProductDetails));
 
 // 🔗 RELATED PRODUCTS
-router.get("/:id/related", getRelatedProducts);
+router.get("/:id/related", catchAsync(getRelatedProducts));
 
 // 📌 SINGLE PRODUCT
-router.get("/:id", getProductById);
+router.get("/:id", catchAsync(getProductById));
 
 module.exports = router;

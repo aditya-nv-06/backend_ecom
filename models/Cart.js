@@ -35,6 +35,16 @@ const Cart = sequelize.define('Cart', {
   isActive: {
     type: DataTypes.BOOLEAN,
     defaultValue: true
+  },
+  couponId: {
+    type: DataTypes.UUID,
+    allowNull: true,
+    references: {
+      model: 'coupons',
+      key: 'id'
+    },
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE'
   }
 }, {
   tableName: 'carts',

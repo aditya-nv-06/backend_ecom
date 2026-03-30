@@ -4,20 +4,28 @@ require('dotenv').config();
 const { connectDB } = require('./config/sequelize');
 
 async function createAdmin() {
-  await connectDB();
+  try {
+    await connectDB();
 
-  const hashedPassword = await bcrypt.hash('admin123', 12);
+    // Plain password you want to use
+    const plainPassword = 'Rakesh123';
 
-  const admin = await User.create({
-    name: 'Admin User',
-    email: 'admin@example.com',
-    password: hashedPassword,
-    role: 'admin',
-    isActive: true
-  });
+    // Create admin user
+    const admin = await User.create({
+      name: 'Admin',
+      email: 'rakesh@example.com',
+      password: plainPassword,
+      role: 'admin'
+    });
 
-  console.log('Admin user created:', admin.email);
-  process.exit(0);
+    console.log('Admin user created successfully!');
+    console.log('Email:', admin.email);
+    console.log('Password (plain text):', plainPassword); // ✅ print password
+    console.log('Password (plain text):', plainPassword);
+
+  } catch (error) {
+    console.error('Error creating admin user:', error);
+  }
 }
 
-createAdmin().catch(console.error);
+createAdmin();

@@ -15,6 +15,8 @@ A complete e-commerce backend system with **Cart**, **Shipping Address**, and **
 3. **[models/ShippingAddress.js](./models/ShippingAddress.js)** - Shipping address model
 4. **[models/Order.js](./models/Order.js)** - Order model
 5. **[models/OrderItem.js](./models/OrderItem.js)** - Order items model
+6. **[models/Coupon.js](./models/Coupon.js)** - Discount coupons model
+7. **[models/CouponUsage.js](./models/CouponUsage.js)** - Tracking coupon usage
 
 ### Controllers (3 files)
 1. **[controllers/cartController.js](./controllers/cartController.js)** - Cart operations
@@ -32,19 +34,22 @@ A complete e-commerce backend system with **Cart**, **Shipping Address**, and **
    - `setDefaultAddress()` - Set default address
    - `deleteShippingAddress()` - Delete address
 
-3. **[controllers/orderController.js](./controllers/orderController.js)** - Order management
-   - `getOrders()` - Get all orders with filtering/pagination
-   - `getOrder()` - Get single order details
-   - `placeOrder()` - Place order from cart
-   - `updateOrderStatus()` - Update order status
-   - `updatePaymentStatus()` - Update payment status
-   - `cancelOrder()` - Cancel order with stock restoration
-   - `getOrderAnalytics()` - Get order statistics
+4. **[controllers/paymentController.js](./controllers/paymentController.js)** - Payment flows
+   - `initiatePayment()` - Create Razorpay order
+   - `handleWebhook()` - Process Razorpay events
+   - `mockPaymentSuccess()` - Development testing utility
+
+5. **[controllers/couponController.js](./controllers/couponController.js)** - Discount management
+   - `applyCoupon()` - Validate and link coupon to cart
+   - `getAvailableCoupons()` - User available discounts
+   - Admin CRUD operations
 
 ### Routes (3 files)
 1. **[routes/cartRoutes.js](./routes/cartRoutes.js)** - Cart endpoints with validation
 2. **[routes/shippingAddressRoutes.js](./routes/shippingAddressRoutes.js)** - Address endpoints with validation
-3. **[routes/orderRoutes.js](./routes/orderRoutes.js)** - Order endpoints with validation
+3. **[routes/orderRoutes.js](./routes/orderRoutes.js)** - Order endpoints
+4. **[routes/paymentRoutes.js](./routes/paymentRoutes.js)** - Payment endpoints
+5. **[routes/couponRoutes.js](./routes/couponRoutes.js)** - Coupon endpoints
 
 ### Migrations (5 files)
 1. **migrations/20260324110000-create-carts.js** - Cart table
@@ -95,6 +100,20 @@ POST   /api/orders/place                  - Place order
 PATCH  /api/orders/:orderId/status        - Update status
 PATCH  /api/orders/:orderId/payment-status - Update payment
 POST   /api/orders/:orderId/cancel        - Cancel order
+```
+
+### Coupon API (New)
+```
+POST   /api/coupons/apply             - Apply coupon to cart
+DELETE /api/coupons/remove            - Remove coupon
+GET    /api/coupons                   - List available coupons
+```
+
+### Payment API (New)
+```
+POST   /api/payment/initiate          - Initiate Razorpay order
+POST   /api/payment/webhook           - Razorpay webhook handler
+POST   /api/payment/mock-success      - Mock payment utility
 ```
 
 ---

@@ -2,6 +2,7 @@ const { DataTypes } = require("sequelize");
 const { sequelize } = require("../../config/sequelize");
 
 const Product = sequelize.define("Product", {
+
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
@@ -16,8 +17,12 @@ const Product = sequelize.define("Product", {
 
   description: DataTypes.TEXT,
 
+  brand: {
+    type: DataTypes.STRING
+  },
+
   originalPrice: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DECIMAL(10,2),
     allowNull: false,
     validate: { min: 0 }
   },
@@ -29,7 +34,7 @@ const Product = sequelize.define("Product", {
   },
 
   price: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DECIMAL(10,2),
     allowNull: false
   },
 
@@ -59,33 +64,32 @@ const Product = sequelize.define("Product", {
     defaultValue: true
   },
 
-  category: {
-    type: DataTypes.STRING,
-    allowNull: true
-  },
-
   categoryId: {
     type: DataTypes.UUID,
     allowNull: true,
     references: {
-      model: 'categories',
-      key: 'id'
+      model: "categories",
+      key: "id"
     }
   }
 
-}, {
-  tableName: "products",
-  timestamps: true,
+},{
+  tableName:"products",
+  timestamps:true,
 
-  hooks: {
-    beforeSave: (product) => {
-      const discount = product.discountPercentage || 0;
+  hooks:{
+    beforeSave:(product)=>{
 
-      product.price =
-        product.originalPrice -
-        (product.originalPrice * discount) / 100;
+      const original = Number(product.originalPrice);
+      const discount = Number(product.discountPercentage) || 0;
+
+      const finalPrice = original - (original * discount)/100;
+
+      product.price = finalPrice.toFixed(2);
+
     }
   }
+
 });
 
 module.exports = Product;

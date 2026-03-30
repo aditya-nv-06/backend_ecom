@@ -1,11 +1,21 @@
 const express = require("express");
 const router = express.Router();
 
-const { getVariantsByProduct, getVariantByColor } = require("../controllers/productVariantController");
+const { getVariantsByProduct, getVariantByColor, getVariantById } = require("../controllers/productVariantController");
 const { param, query } = require("express-validator");
 const { validate } = require("../middleware/validation.middleware");
 
-// ================= GET ALL VARIANTS =================
+// ================= GET SINGLE VARIANT BY ID =================
+router.get(
+  "/:id",
+  [
+    param("id").isUUID().withMessage("Invalid variant ID")
+  ],
+  validate,
+  getVariantById
+);
+
+// ================= GET ALL VARIANTS BY PRODUCT ID =================
 router.get(
   "/:productId/variants",
   [

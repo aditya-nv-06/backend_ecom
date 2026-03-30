@@ -119,6 +119,16 @@ const Order = sequelize.define('Order', {
   cancelReason: {
     type: DataTypes.TEXT,
     allowNull: true
+  },
+  couponId: {
+    type: DataTypes.UUID,
+    allowNull: true,
+    references: {
+      model: 'coupons',
+      key: 'id'
+    },
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE'
   }
 }, {
   tableName: 'orders',

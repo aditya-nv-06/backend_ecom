@@ -9,24 +9,9 @@ const ProductSpecification = sequelize.define("ProductSpecification", {
     primaryKey: true
   },
 
-  material: {
-    type: DataTypes.STRING
-  },
-
-  legMaterial: {
-    type: DataTypes.STRING
-  },
-
-  weightCapacity: {
-    type: DataTypes.STRING
-  },
-
-  seatHeight: {
-    type: DataTypes.STRING
-  },
-
-  totalHeight: {
-    type: DataTypes.STRING
+  specifications: {
+    type: DataTypes.JSONB,
+    defaultValue: {}
   }
 
 }, {

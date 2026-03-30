@@ -93,7 +93,7 @@ const getReviews = catchAsync(async (req, res, next) => {
     include: [
       {
         model: User,
-        as: "user",
+        as: "reviewUser",
         attributes: ["id", "name"]
       }
     ],
@@ -103,10 +103,18 @@ const getReviews = catchAsync(async (req, res, next) => {
   });
 
   const totalPages = Math.ceil(count / limit);
+  
+  const product = await Product.findByPk(productId, {
+    attributes: ["rating", "totalReviews"]
+  });
 
   return sendResponse(res, {
     message: "Reviews fetched",
-    data: rows,
+    data: {
+      reviews: rows,
+      averageRating: product?.rating || 0,
+      totalReviews: product?.totalReviews || 0
+    },
     meta: {
       total: count,
       page: parseInt(page),

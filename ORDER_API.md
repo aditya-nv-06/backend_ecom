@@ -201,6 +201,8 @@ curl -X GET http://localhost:5000/api/orders/550e8400-e29b-41d4-a716-44665544000
 ### 3. Place Order
 **POST** `/api/orders/place`
 
+Place a new order from the user's cart. **Note: This creates the order but does not initiate payment for online methods.** After placing an order, call `/api/payment/initiate` to get gateway details.
+
 Place a new order from the user's cart.
 
 #### Request Body
@@ -256,7 +258,10 @@ curl -X POST http://localhost:5000/api/orders/place \
           "totalPrice": 5999.00,
           "status": "pending"
         }
-      ]
+      ],
+      "couponId": "uuid (optional)",
+      "discountAmount": 200.00,
+      "finalAmount": 6149.00
     }
   }
 }
@@ -641,7 +646,12 @@ curl -X POST http://localhost:5000/api/orders/place \
     "paymentMethod": "cod"
   }'
 
-# 4. Track order
+# 4. Initiate Payment (New step)
+curl -X POST http://localhost:5000/api/payment/initiate \
+  -H "Authorization: Bearer <token>" \
+  -d '{"orderId": "order-uuid"}'
+
+# 5. Track order
 curl -X GET http://localhost:5000/api/orders/order-uuid \
   -H "Authorization: Bearer <token>"
 

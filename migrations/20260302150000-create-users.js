@@ -1,70 +1,96 @@
 'use strict';
 
-/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
+
     await queryInterface.createTable('users', {
+
       id: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
-        autoIncrement: true,
         allowNull: false
       },
-      username: {
+
+      name: {
         type: Sequelize.STRING(50),
         allowNull: false,
         unique: true
       },
+
       email: {
-        type: Sequelize.STRING(100),
+        type: Sequelize.STRING,
         allowNull: false,
         unique: true
       },
+
       password: {
-        type: Sequelize.STRING(255),
-        allowNull: false
+        type: Sequelize.STRING,
+        allowNull: true
       },
-      firstName: {
-        type: Sequelize.STRING(50),
+
+      googleId: {
+        type: Sequelize.STRING,
         allowNull: true,
-        field: 'first_name'
+        unique: true
       },
-      lastName: {
-        type: Sequelize.STRING(50),
-        allowNull: true,
-        field: 'last_name'
+
+      authProvider: {
+        type: Sequelize.ENUM('local','google'),
+        defaultValue: 'local'
       },
+
+      avatar: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
+
+      refreshToken: {
+        type: Sequelize.TEXT,
+        allowNull: true
+      },
+
       role: {
-        type: Sequelize.ENUM('customer', 'admin'),
-        defaultValue: 'customer',
-        allowNull: false
+        type: Sequelize.ENUM('user','admin'),
+        defaultValue: 'user'
       },
+
       isActive: {
         type: Sequelize.BOOLEAN,
-        defaultValue: true,
-        allowNull: false,
-        field: 'is_active'
+        defaultValue: true
       },
+
+      lastLogin: {
+        type: Sequelize.DATE
+      },
+
+      passwordResetToken: {
+        type: Sequelize.STRING
+      },
+
+      passwordResetExpires: {
+        type: Sequelize.DATE
+      },
+
       createdAt: {
-        type: Sequelize.DATE,
         allowNull: false,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-        field: 'created_at'
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
+
       updatedAt: {
-        type: Sequelize.DATE,
         allowNull: false,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-        field: 'updated_at'
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       }
+
     });
 
-
-    await queryInterface.addIndex('users', ['email']);
-    await queryInterface.addIndex('users', ['username']);
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
+
     await queryInterface.dropTable('users');
+
   }
 };

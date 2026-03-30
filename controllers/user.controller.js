@@ -4,7 +4,7 @@ const catchAsync = require('../utils/catchAsync');
 const messages = require('../constants/messages');
 
 /**
- * Get all users (Admin only)
+ * Get all users
  * GET /api/users
  */
 const getAllUsers = catchAsync(async (req, res, next) => {
@@ -22,7 +22,7 @@ const getAllUsers = catchAsync(async (req, res, next) => {
 });
 
 /**
- * Get user by ID (Admin only)
+ * Get a single user
  * GET /api/users/:id
  */
 const getUserById = catchAsync(async (req, res, next) => {
@@ -72,7 +72,7 @@ const updateProfile = catchAsync(async (req, res, next) => {
 });
 
 /**
- * Delete user (Admin only)
+ * Delete a user
  * DELETE /api/users/:id
  */
 const deleteUser = catchAsync(async (req, res, next) => {

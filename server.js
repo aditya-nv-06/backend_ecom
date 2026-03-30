@@ -14,6 +14,7 @@ const  createDatabaseIfNotExists  = require('./utils/createDatabase');
 
 // ✅ ROUTES
 const routes = require('./routes/index');
+const qaRoutes = require("./routes/qa.routes");
 
 const app = express();
 
@@ -41,7 +42,11 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // ================= BODY PARSING =================
-app.use(express.json());
+app.use(express.json({
+  verify: (req, res, buf) => {
+    req.rawBody = buf;
+  }
+}));
 app.use(express.urlencoded({ extended: true }));
 
 // ================= LOAD MODELS DYNAMICALLY =================
@@ -67,6 +72,9 @@ app.get('/api/health', (req, res) => {
     message: 'Server is running'
   });
 });
+
+// ✅ Adjust QA route registration
+app.use('/api/products', qaRoutes);
 
 // ================= 404 HANDLER =================
 app.use((req, res) => {

@@ -3,6 +3,50 @@ const { Op } = require("sequelize");
 const messages = require('../constants/messages');
 const catchAsync = require('../utils/catchAsync');
 
+/**
+ * Get all product variants
+ * GET /api/product-variants
+ */
+
+/**
+ * Get a single product variant
+ * GET /api/product-variants/:id
+ */
+const getVariantById = catchAsync(async (req, res, next) => {
+    const { id } = req.params;
+
+    const variant = await ProductVariant.findByPk(id, {
+        include: [
+            {
+                model: Product,
+                as: 'variantProduct',
+                attributes: ['id', 'name', 'price']
+            }
+        ]
+    });
+
+    if (!variant) {
+        return res.status(404).json({ success: false, message: messages.ERROR.NOT_FOUND });
+    }
+
+    return res.json({ success: true, data: variant });
+});
+
+/**
+ * Create a new product variant
+ * POST /api/product-variants
+ */
+
+/**
+ * Update a product variant
+ * PATCH /api/product-variants/:id
+ */
+
+/**
+ * Delete a product variant
+ * DELETE /api/product-variants/:id
+ */
+
 // ================= GET VARIANTS BY PRODUCT ID =================
 const getVariantsByProduct = catchAsync(async (req, res, next) => {
     const { productId } = req.params;
@@ -49,4 +93,4 @@ const getVariantByColor = catchAsync(async (req, res, next) => {
   });
 
 
-module.exports = { getVariantsByProduct, getVariantByColor };
+module.exports = { getVariantsByProduct, getVariantByColor, getVariantById };

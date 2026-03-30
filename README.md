@@ -36,6 +36,12 @@ A comprehensive RESTful API for an e-commerce application built with Express.js,
 - ✅ Order analytics and summaries
 - ✅ Estimated delivery tracking
 
+### Payment & Discounts
+- ✅ Razorpay integration with secure webhooks
+- ✅ Mock Payment flow for development
+- ✅ Coupon System (Percentage/Fixed discounts)
+- ✅ Usage limits and validity rules for coupons
+
 ### Product Management
 - ✅ Browse products with filtering
 - ✅ Product variants and specifications
@@ -70,6 +76,8 @@ A comprehensive RESTful API for an e-commerce application built with Express.js,
 - 🛒 [Cart API Documentation](./CART_API.md) - Shopping cart endpoints
 - 📍 [Shipping Address API Documentation](./SHIPPING_ADDRESS_API.md) - Address management
 - 📦 [Order API Documentation](./ORDER_API.md) - Order processing
+- 💳 [Payment API Documentation](./PAYMENT_API.md) - Razorpay & Mock Payment
+- 🎫 [Coupon API Documentation](./COUPON_API.md) - Discounts & Promotions
 - 🚀 [Quick Start Guide](./QUICKSTART.md) - Get started in 5 minutes
 - 📚 [Implementation Guide](./IMPLEMENTATION_GUIDE.md) - Architecture & patterns
 - ✨ [Features Summary](./FEATURES_SUMMARY.md) - Complete feature overview

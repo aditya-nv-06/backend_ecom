@@ -60,6 +60,14 @@ curl -X POST http://localhost:5000/api/cart/add \
   }"
 ```
 
+### Step 6: Apply Coupon (Optional)
+```bash
+curl -X POST http://localhost:5000/api/coupons/apply \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"code": "SAVE20"}'
+```
+
 ### Step 6: Place Order
 ```bash
 ADDRESS_ID="address_uuid"
@@ -73,6 +81,16 @@ curl -X POST http://localhost:5000/api/orders/place \
     \"notes\": \"Please deliver in the evening\"
   }"
 # Copy the order ID
+```
+
+### Step 8: Initiate Payment
+```bash
+ORDER_ID="order_uuid"
+
+curl -X POST http://localhost:5000/api/payment/initiate \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{\"orderId\": \"$ORDER_ID\"}"
 ```
 
 ### Step 7: Check Order Status
@@ -185,6 +203,8 @@ curl -X POST http://localhost:5000/api/orders/$ORDER_ID/cancel \
 | [CART_API.md](./CART_API.md) | Complete Cart API reference |
 | [SHIPPING_ADDRESS_API.md](./SHIPPING_ADDRESS_API.md) | Address API reference |
 | [ORDER_API.md](./ORDER_API.md) | Order API reference |
+| [PAYMENT_API.md](./PAYMENT_API.md) | Payment & Webhooks |
+| [COUPON_API.md](./COUPON_API.md) | Coupons & Discounts |
 | [IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md) | Setup & architecture |
 | [FEATURES_SUMMARY.md](./FEATURES_SUMMARY.md) | Feature overview |
 

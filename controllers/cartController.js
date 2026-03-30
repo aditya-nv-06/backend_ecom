@@ -1,8 +1,31 @@
-const { Cart, CartItem, Product, ProductVariant, User } = require('../models');
+const { Cart, CartItem, Product, ProductVariant, User, Coupon } = require('../models');
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
 const messages = require('../constants/messages');
 const { sequelize } = require('../config/sequelize');
+
+/**
+ * Helper to calculate discount
+ */
+const calculateDiscount = (cart) => {
+  if (!cart.appliedCoupon) return 0;
+  
+  const coupon = cart.appliedCoupon;
+  const subtotal = parseFloat(cart.totalPrice);
+  let discount = 0;
+
+  if (coupon.type === 'percentage') {
+    discount = (subtotal * parseFloat(coupon.value)) / 100;
+    if (coupon.maxDiscountAmount && discount > parseFloat(coupon.maxDiscountAmount)) {
+      discount = parseFloat(coupon.maxDiscountAmount);
+    }
+  } else if (coupon.type === 'fixed') {
+    discount = parseFloat(coupon.value);
+  }
+
+  // Ensure discount doesn't exceed subtotal
+  return Math.min(discount, subtotal);
+};
 
 /**
  * Get user's cart
@@ -29,6 +52,11 @@ const getCart = catchAsync(async (req, res, next) => {
             attributes: ['id', 'color', 'price', 'stock']
           }
         ]
+      },
+      {
+        model: Coupon,
+        as: 'appliedCoupon',
+        attributes: ['id', 'code', 'type', 'value', 'maxDiscountAmount']
       }
     ]
   });
@@ -38,10 +66,15 @@ const getCart = catchAsync(async (req, res, next) => {
     cart = await Cart.create({ userId, totalPrice: 0, totalItems: 0, isActive: true });
   }
 
+  const discountAmount = calculateDiscount(cart);
+  const finalPrice = parseFloat(cart.totalPrice) - discountAmount;
+
   res.status(200).json({
     status: 'success',
     data: {
-      cart
+      cart,
+      discountAmount,
+      finalPrice
     }
   });
 });
@@ -170,11 +203,16 @@ const addToCart = catchAsync(async (req, res, next) => {
     ]
   });
 
+  const discountAmount = calculateDiscount(updatedCart);
+  const finalPrice = parseFloat(updatedCart.totalPrice) - discountAmount;
+
   res.status(201).json({
     status: 'success',
     message: 'Item added to cart successfully',
     data: {
-      cart: updatedCart
+      cart: updatedCart,
+      discountAmount,
+      finalPrice
     }
   });
 });
@@ -268,15 +306,25 @@ const updateCartItem = catchAsync(async (req, res, next) => {
             attributes: ['id', 'color', 'price', 'stock']
           }
         ]
+      },
+      {
+        model: Coupon,
+        as: 'appliedCoupon',
+        attributes: ['id', 'code', 'type', 'value', 'maxDiscountAmount']
       }
     ]
   });
+
+  const discountAmount = calculateDiscount(updatedCart);
+  const finalPrice = parseFloat(updatedCart.totalPrice) - discountAmount;
 
   res.status(200).json({
     status: 'success',
     message: 'Cart item updated successfully',
     data: {
-      cart: updatedCart
+      cart: updatedCart,
+      discountAmount,
+      finalPrice
     }
   });
 });
@@ -331,15 +379,25 @@ const removeFromCart = catchAsync(async (req, res, next) => {
             attributes: ['id', 'name', 'price', 'stock']
           }
         ]
+      },
+      {
+        model: Coupon,
+        as: 'appliedCoupon',
+        attributes: ['id', 'code', 'type', 'value', 'maxDiscountAmount']
       }
     ]
   });
+
+  const discountAmount = calculateDiscount(updatedCart);
+  const finalPrice = parseFloat(updatedCart.totalPrice) - discountAmount;
 
   res.status(200).json({
     status: 'success',
     message: 'Item removed from cart successfully',
     data: {
-      cart: updatedCart
+      cart: updatedCart,
+      discountAmount,
+      finalPrice
     }
   });
 });

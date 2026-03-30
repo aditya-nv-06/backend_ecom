@@ -28,6 +28,15 @@ const placeOrderValidation = [
     .withMessage('Notes must not exceed 500 characters')
 ];
 
+const buyNowValidation = [
+  body('productId').notEmpty().withMessage('Product ID is required').isUUID().withMessage('Invalid product ID'),
+  body('quantity').notEmpty().withMessage('Quantity is required').isInt({ min: 1 }).withMessage('Quantity must be at least 1'),
+  body('shippingAddressId').notEmpty().withMessage('Shipping address ID is required').isUUID().withMessage('Invalid shipping address ID'),
+  body('productVariantId').optional().isUUID().withMessage('Invalid product variant ID'),
+  body('paymentMethod').optional().isIn(['credit_card', 'debit_card', 'upi', 'net_banking', 'wallet', 'cod']).withMessage('Invalid payment method')
+];
+
+
 const updateOrderStatusValidation = [
   param('orderId')
     .isUUID()
@@ -68,6 +77,7 @@ const cancelOrderValidation = [
     .withMessage('Reason must not exceed 500 characters')
 ];
 
+
 const orderIdValidation = [
   param('orderId')
     .isUUID()
@@ -107,6 +117,7 @@ router.get('/analytics/summary', orderController.getOrderAnalytics);
 router.get('/:orderId', orderIdValidation, validate, orderController.getOrder);
 
 router.post('/place', placeOrderValidation, validate, orderController.placeOrder);
+router.post('/buy-now', buyNowValidation, validate, orderController.buyNow);
 
 router.patch(
   '/:orderId/status',

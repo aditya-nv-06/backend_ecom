@@ -1,214 +1,253 @@
-const { sequelize } = require('../config/sequelize');
+const { sequelize } = require("../config/sequelize");
 
+// User
+const User = require("./User.model");
 
-
-const User = require('./User.model');
-
-// Products
-const Category =require("../models/product/Category");
+// Product related models
+const Category = require("./product/Category");
 const Product = require("./product/Product");
-const ProductVariant = require("../models/product/ProductVariant");
-const ProductImage= require("../models/product/ProductImage");
+const ProductVariant = require("./product/ProductVariant");
+const ProductImage = require("./product/ProductImage");
 const ProductSpecification = require("./product/ProductSpecification");
+const ProductDetails = require("./product/ProductDetails");
 
 // Other models
 const Question = require("./Question");
 const Review = require("./Review");
 const Wishlist = require("./Wishlist");
 
-// Cart and Order models
+// Cart & Checkout models
 const Cart = require("./Cart");
 const CartItem = require("./CartItem");
-const ShippingAddress = require("./ShippingAddress");
 const Order = require("./Order");
 const OrderItem = require("./OrderItem");
+const ShippingAddress = require("./ShippingAddress");
+const Coupon = require("./Coupon");
+const CouponUsage = require("./CouponUsage");
 
-// Initialize models
+// Initialize models object
 const models = {
+  sequelize,
   User,
   Category,
   Product,
   ProductVariant,
   ProductImage,
   ProductSpecification,
+  ProductDetails,
   Question,
   Review,
   Wishlist,
   Cart,
   CartItem,
-  ShippingAddress,
   Order,
   OrderItem,
-  sequelize
+  ShippingAddress,
+  Coupon,
+  CouponUsage
 };
 
-// Set up associations here if needed
-// Example: User.hasMany(Order);
+/* ================= RELATIONSHIPS ================= */
 
-//Category -> Product
-Category.hasMany( Product ,{foreignKey: "categoryId"})
-Product.belongsTo(Category,{foreignKey: "categoryId"})
+// Category → Product
+Category.hasMany(Product, { foreignKey: "categoryId", as: "products" });
+Product.belongsTo(Category, { foreignKey: "categoryId", as: "productCategory" });
 
 
 // Product → Images
 Product.hasMany(ProductImage, {
   foreignKey: "productId",
   as: "images",
-  onDelete: "CASCADE",
-  hooks: true,
+  onDelete: "CASCADE"
 });
-ProductImage.belongsTo(Product, { foreignKey: "productId", as: "product" });
 
-// Product → Specifications (ONE)
+ProductImage.belongsTo(Product, {
+  foreignKey: "productId",
+  as: "imageProduct"
+});
+
+
+// Product → Specifications
 Product.hasOne(ProductSpecification, {
   foreignKey: "productId",
   as: "specifications",
-  onDelete: "CASCADE",
-  hooks: true,
+  onDelete: "CASCADE"
 });
-ProductSpecification.belongsTo(Product, { foreignKey: "productId", as: "product" });
+
+ProductSpecification.belongsTo(Product, {
+  foreignKey: "productId",
+  as: "specProduct"
+});
+
+
+// Product → Details
+Product.hasOne(ProductDetails, {
+  foreignKey: "productId",
+  as: "details",
+  onDelete: "CASCADE"
+});
+
+ProductDetails.belongsTo(Product, {
+  foreignKey: "productId",
+  as: "detailProduct"
+});
+
 
 // Product → Variants
 Product.hasMany(ProductVariant, {
   foreignKey: "productId",
   as: "variants",
-  onDelete: "CASCADE",
-  hooks: true,
-});
-ProductVariant.belongsTo(Product, { foreignKey: "productId", as: "product" });
-
-// Wishlist associations
-Wishlist.belongsTo(Product, { foreignKey: "productId", as: "product" });
-Wishlist.belongsTo(User, { foreignKey: "userId", as: "user" });
-
-//Review associations
-Review.associate = (models) => {
-  Review.belongsTo(models.User, {
-    foreignKey: "userId",
-    as: "user"
-  });
-
-  Review.belongsTo(models.Product, {
-    foreignKey: "productId",
-    as: "product"
-  });
-};
-
-// User -> Cart (One to One)
-User.hasOne(Cart, {
-  foreignKey: 'userId',
-  as: 'cart',
-  onDelete: 'CASCADE',
-  hooks: true
-});
-Cart.belongsTo(User, {
-  foreignKey: 'userId',
-  as: 'user'
+  onDelete: "CASCADE"
 });
 
-// Cart -> CartItems (One to Many)
-Cart.hasMany(CartItem, {
-  foreignKey: 'cartId',
-  as: 'items',
-  onDelete: 'CASCADE',
-  hooks: true
-});
-CartItem.belongsTo(Cart, {
-  foreignKey: 'cartId',
-  as: 'cart'
-});
-
-// CartItem -> Product
-CartItem.belongsTo(Product, {
-  foreignKey: 'productId',
-  as: 'product'
-});
-Product.hasMany(CartItem, {
-  foreignKey: 'productId',
-  as: 'cartItems'
-});
-
-// CartItem -> ProductVariant
-CartItem.belongsTo(ProductVariant, {
-  foreignKey: 'productVariantId',
-  as: 'variant'
-});
-ProductVariant.hasMany(CartItem, {
-  foreignKey: 'productVariantId',
-  as: 'cartItems'
+ProductVariant.belongsTo(Product, {
+  foreignKey: "productId",
+  as: "variantProduct"
 });
 
 
-// User -> ShippingAddress (One to Many)
-User.hasMany(ShippingAddress, {
-  foreignKey: 'userId',
-  as: 'shippingAddresses',
-  onDelete: 'CASCADE',
-  hooks: true
+/* ================= USER RELATIONS ================= */
+
+// User → Wishlist
+User.hasMany(Wishlist, {
+  foreignKey: "userId",
+  as: "wishlists"
 });
-ShippingAddress.belongsTo(User, {
-  foreignKey: 'userId',
-  as: 'user'
+
+Wishlist.belongsTo(User, {
+  foreignKey: "userId",
+  as: "wishlistUser"
 });
 
 
-// User -> Order (One to Many)
-User.hasMany(Order, {
-  foreignKey: 'userId',
-  as: 'orders',
-  onDelete: 'CASCADE',
-  hooks: true
-});
-Order.belongsTo(User, {
-  foreignKey: 'userId',
-  as: 'user'
+// User → Reviews
+User.hasMany(Review, {
+  foreignKey: "userId",
+  as: "reviews"
 });
 
-// Order -> ShippingAddress
-Order.belongsTo(ShippingAddress, {
-  foreignKey: 'shippingAddressId',
-  as: 'shippingAddress'
-});
-ShippingAddress.hasMany(Order, {
-  foreignKey: 'shippingAddressId',
-  as: 'orders'
-});
-
-// Order -> OrderItems (One to Many)
-Order.hasMany(OrderItem, {
-  foreignKey: 'orderId',
-  as: 'items',
-  onDelete: 'CASCADE',
-  hooks: true
-});
-OrderItem.belongsTo(Order, {
-  foreignKey: 'orderId',
-  as: 'order'
-});
-
-// OrderItem -> Product
-OrderItem.belongsTo(Product, {
-  foreignKey: 'productId',
-  as: 'product'
-});
-Product.hasMany(OrderItem, {
-  foreignKey: 'productId',
-  as: 'orderItems'
-});
-
-// OrderItem -> ProductVariant
-OrderItem.belongsTo(ProductVariant, {
-  foreignKey: 'productVariantId',
-  as: 'variant'
-});
-ProductVariant.hasMany(OrderItem, {
-  foreignKey: 'productVariantId',
-  as: 'orderItems'
+Review.belongsTo(User, {
+  foreignKey: "userId",
+  as: "reviewUser"
 });
 
 
-// Call associate methods if they exist
-if (Question.associate) Question.associate(models);
-if (Review.associate) Review.associate(models);
+// User → Questions
+User.hasMany(Question, {
+  foreignKey: "userId",
+  as: "questions"
+});
+
+Question.belongsTo(User, {
+  foreignKey: "userId",
+  as: "questionUser"
+});
+
+
+/* ================= PRODUCT RELATIONS ================= */
+
+// Product → Wishlist
+Product.hasMany(Wishlist, {
+  foreignKey: "productId",
+  as: "wishlistItems"
+});
+
+Wishlist.belongsTo(Product, {
+  foreignKey: "productId",
+  as: "wishlistProduct"
+});
+
+
+// Product → Reviews
+Product.hasMany(Review, {
+  foreignKey: "productId",
+  as: "reviews"
+});
+
+Review.belongsTo(Product, {
+  foreignKey: "productId",
+  as: "reviewProduct"
+});
+
+
+// Product → Questions
+Product.hasMany(Question, {
+  foreignKey: "productId",
+  as: "questions"
+});
+
+Question.belongsTo(Product, {
+  foreignKey: "productId",
+  as: "questionProduct"
+});
+
+
+/* ================= CART RELATIONS ================= */
+
+// User → Cart
+User.hasMany(Cart, { foreignKey: "userId", as: "carts" });
+Cart.belongsTo(User, { foreignKey: "userId", as: "user" });
+
+// Cart → CartItem
+Cart.hasMany(CartItem, { foreignKey: "cartId", as: "items", onDelete: "CASCADE" });
+CartItem.belongsTo(Cart, { foreignKey: "cartId", as: "cart" });
+
+// CartItem → Product
+CartItem.belongsTo(Product, { foreignKey: "productId", as: "product" });
+Product.hasMany(CartItem, { foreignKey: "productId", as: "cartItems" });
+
+// CartItem → ProductVariant
+CartItem.belongsTo(ProductVariant, { foreignKey: "productVariantId", as: "variant" });
+
+
+/* ================= ORDER RELATIONS ================= */
+
+// User → Order
+User.hasMany(Order, { foreignKey: "userId", as: "orders" });
+Order.belongsTo(User, { foreignKey: "userId", as: "user" });
+
+// Order → OrderItem
+Order.hasMany(OrderItem, { foreignKey: "orderId", as: "items", onDelete: "CASCADE" });
+OrderItem.belongsTo(Order, { foreignKey: "orderId", as: "order" });
+
+// OrderItem → Product
+OrderItem.belongsTo(Product, { foreignKey: "productId", as: "product" });
+Product.hasMany(OrderItem, { foreignKey: "productId", as: "orderItems" });
+
+// OrderItem → ProductVariant
+OrderItem.belongsTo(ProductVariant, { foreignKey: "productVariantId", as: "variant" });
+
+// Order → ShippingAddress
+Order.belongsTo(ShippingAddress, { foreignKey: "shippingAddressId", as: "shippingAddress" });
+ShippingAddress.hasMany(Order, { foreignKey: "shippingAddressId", as: "orders" });
+
+
+/* ================= SHIPPING ADDRESS RELATIONS ================= */
+
+// User → ShippingAddress
+User.hasMany(ShippingAddress, { foreignKey: "userId", as: "shippingAddresses" });
+ShippingAddress.belongsTo(User, { foreignKey: "userId", as: "user" });
+
+
+/* ================= COUPON RELATIONS ================= */
+
+// Coupon → Cart
+Coupon.hasMany(Cart, { foreignKey: "couponId", as: "carts" });
+Cart.belongsTo(Coupon, { foreignKey: "couponId", as: "appliedCoupon" });
+
+// Coupon → Order
+Coupon.hasMany(Order, { foreignKey: "couponId", as: "orders" });
+Order.belongsTo(Coupon, { foreignKey: "couponId", as: "appliedCoupon" });
+
+// Coupon Usage
+User.hasMany(CouponUsage, { foreignKey: "userId", as: "couponUsages" });
+CouponUsage.belongsTo(User, { foreignKey: "userId", as: "user" });
+
+Coupon.hasMany(CouponUsage, { foreignKey: "couponId", as: "usages" });
+CouponUsage.belongsTo(Coupon, { foreignKey: "couponId", as: "coupon" });
+
+Order.hasOne(CouponUsage, { foreignKey: "orderId", as: "couponUsage" });
+CouponUsage.belongsTo(Order, { foreignKey: "orderId", as: "order" });
+
 
 module.exports = models;

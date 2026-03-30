@@ -47,6 +47,8 @@ This document provides a complete implementation guide for the new cart, shippin
 - ✅ Get order analytics
 - ✅ Automatic cart clearing after order
 - ✅ Transaction-based order placement
+- ✅ Coupon System integration
+- ✅ Modular Payment flow (Razorpay + Mock)
 
 ---
 
@@ -145,6 +147,33 @@ CREATE TABLE order_items (
 );
 ```
 
+#### 6. `coupons`
+```sql
+CREATE TABLE coupons (
+  id UUID PRIMARY KEY,
+  code VARCHAR(255) UNIQUE,
+  type ENUM('percentage', 'fixed'),
+  value DECIMAL(10,2),
+  minOrderAmount DECIMAL(12,2),
+  maxDiscountAmount DECIMAL(12,2),
+  startDate TIMESTAMP,
+  endDate TIMESTAMP,
+  usageLimit INTEGER,
+  usedCount INTEGER,
+  isActive BOOLEAN
+);
+```
+
+#### 7. `coupon_usages`
+```sql
+CREATE TABLE coupon_usages (
+  id UUID PRIMARY KEY,
+  couponId UUID FOREIGN KEY,
+  userId UUID FOREIGN KEY,
+  orderId UUID FOREIGN KEY
+);
+```
+
 ### Relationships Established
 ```
 User 1:1 Cart
@@ -193,6 +222,20 @@ ProductVariant 1:N OrderItem (optional)
 | PATCH | `/api/orders/:orderId/status` | Update status | ✓ |
 | PATCH | `/api/orders/:orderId/payment-status` | Update payment | ✓ |
 | POST | `/api/orders/:orderId/cancel` | Cancel order | ✓ |
+
+### Payment Endpoints
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/api/payment/initiate` | Initiate gateway order | ✓ |
+| POST | `/api/payment/webhook` | Gateway callback | No |
+| POST | `/api/payment/mock-success` | Test payment | ✓ |
+
+### Coupon Endpoints
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/api/coupons/apply` | Apply code to cart | ✓ |
+| DELETE | `/api/coupons/remove` | Remove from cart | ✓ |
+| GET | `/api/coupons` | List active coupons | ✓ |
 
 ---
 
@@ -480,6 +523,29 @@ curl -X PATCH http://localhost:5000/api/orders/$ORDER_ID/status \
   -H "Authorization: Bearer $TOKEN" \
   -d '{"status": "delivered"}'
 # Expected: Error if not in valid transition path
+```
+
+### 5. Test Coupons
+#### Apply Coupon
+```bash
+curl -X POST http://localhost:5000/api/coupons/apply \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{"code": "SAVE20"}'
+```
+
+### 6. Test Payment
+#### Initiate Payment
+```bash
+curl -X POST http://localhost:5000/api/payment/initiate \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{"orderId": "$ORDER_ID"}'
+```
+
+#### Mock Success (Dev)
+```bash
+curl -X POST http://localhost:5000/api/payment/mock-success \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{"orderId": "$ORDER_ID"}'
 ```
 
 ---

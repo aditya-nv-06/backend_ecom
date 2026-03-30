@@ -1,7 +1,33 @@
-const { Question, Product, User } = require("../models");
+const { Question, Product, User, sequelize } = require("../models");
+const { Op } = require("sequelize");
 const sendResponse = (res, { status = 200, success = true, message = "", data = null, meta = null }) =>
   res.status(status).json({ success, message, data, meta });
 
+
+/**
+ * Get all questions and answers
+ * GET /api/qa
+ */
+
+/**
+ * Get a single question and its answers
+ * GET /api/qa/:id
+ */
+
+/**
+ * Create a new question
+ * POST /api/qa
+ */
+
+/**
+ * Update a question or answer
+ * PATCH /api/qa/:id
+ */
+
+/**
+ * Delete a question or answer
+ * DELETE /api/qa/:id
+ */
 
 const askQuestion = async (req, res, next) => {
   try {
@@ -32,17 +58,41 @@ const answerQuestion = async (req, res, next) => {
 
     // Only admin or product owner can answer
     const product = await Product.findByPk(q.productId);
-    if (!req.user.isAdmin && req.user.id !== product.userId)
+    if (req.user.role !== 'admin' && req.user.id !== product.userId)
       return sendResponse(res, { status: 403, success: false, message: "Unauthorized to answer this question" });
 
     await q.update({ answer: answer.trim(), answeredBy });
     const updatedQuestion = await Question.findByPk(questionId, {
       include: [
-        { model: User, as: "user", attributes: ["id", "name"] },
-        { model: User, as: "answeredByUser", attributes: ["id", "name"] }
+        { model: User, as: "askingUser", attributes: ["id", "name"] },
+        { model: User, as: "answeringAdmin", attributes: ["id", "name"] }
       ]
     });
     return sendResponse(res, { message: "Answer added/updated", data: updatedQuestion });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+const adminAddQA = async (req, res, next) => {
+  try {
+    const { question, answer, productId } = req.body;
+    const adminId = req.user.id;
+
+    if (!question || !answer) {
+      return sendResponse(res, { status: 400, success: false, message: "Question and answer are required" });
+    }
+
+    const newQA = await Question.create({
+      productId: productId || null,
+      userId: adminId,
+      question: question.trim(),
+      answer: answer.trim(),
+      answeredBy: adminId
+    });
+
+    return sendResponse(res, { status: 201, message: "Q&A added by admin", data: newQA });
   } catch (err) {
     next(err);
   }
@@ -57,10 +107,15 @@ const getProductQuestions = async (req, res, next) => {
     const offset = (page - 1) * limit;
 
     const { count, rows } = await Question.findAndCountAll({
-      where: { productId },
+      where: {
+        [Op.or]: [
+          { productId },
+          { productId: null }
+        ]
+      },
       include: [
-        { model: User, as: "user", attributes: ["id", "name"] },
-        { model: User, as: "answeredByUser", attributes: ["id", "name"] }
+        { model: User, as: "askingUser", attributes: ["id", "name"] },
+        { model: User, as: "answeringAdmin", attributes: ["id", "name"] }
       ],
       limit, offset,
       order: [["createdAt", "DESC"]]
@@ -70,8 +125,8 @@ const getProductQuestions = async (req, res, next) => {
       id: q.id,
       question: q.question,
       answer: q.answer,
-      askedBy: q.user,
-      answeredBy: q.answeredByUser || null,
+      askedBy: q.askingUser,
+      answeredBy: q.answeringAdmin || null,
       createdAt: q.createdAt,
       updatedAt: q.updatedAt
     }));
@@ -95,7 +150,7 @@ const updateQuestion = async (req, res, next) => {
 
     const q = await Question.findByPk(questionId);
     if (!q) return sendResponse(res, { status: 404, success: false, message: "Question not found" });
-    if (q.userId !== userId) return sendResponse(res, { status: 403, success: false, message: "Unauthorized" });
+    if (q.userId !== userId && req.user.role !== 'admin') return sendResponse(res, { status: 403, success: false, message: "Unauthorized" });
 
     await q.update({ question: question.trim() });
     return sendResponse(res, { message: "Question updated", data: q });
@@ -112,7 +167,7 @@ const deleteQuestion = async (req, res, next) => {
 
     const q = await Question.findByPk(questionId);
     if (!q) return sendResponse(res, { status: 404, success: false, message: "Question not found" });
-    if (q.userId !== userId) return sendResponse(res, { status: 403, success: false, message: "Unauthorized" });
+    if (q.userId !== userId && req.user.role !== 'admin') return sendResponse(res, { status: 403, success: false, message: "Unauthorized" });
 
     await q.destroy();
     return sendResponse(res, { message: "Question deleted" });
@@ -121,4 +176,4 @@ const deleteQuestion = async (req, res, next) => {
   }
 };
 
-module.exports = { askQuestion, answerQuestion, getProductQuestions, updateQuestion, deleteQuestion };
+module.exports = { askQuestion, answerQuestion, adminAddQA, getProductQuestions, updateQuestion, deleteQuestion };

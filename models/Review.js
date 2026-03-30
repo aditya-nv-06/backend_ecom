@@ -30,10 +30,10 @@ const Review = sequelize.define(
     });
 
     Review.associate = (models) => {
-        Review.belongsTo(models.Product, { foreignKey: 'productId', as: 'product' });
+        Review.belongsTo(models.Product, { foreignKey: 'productId', as: 'reviewProduct' });
 
         // This association allows us to easily fetch the user who wrote the review when we query reviews.
-        Review.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
+        Review.belongsTo(models.User, { foreignKey: 'userId', as: 'reviewUser' });
     };
 
 module.exports = Review;

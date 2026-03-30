@@ -40,26 +40,17 @@ curl -X GET http://localhost:5000/api/cart \
       "isActive": true,
       "createdAt": "2026-03-24T10:00:00Z",
       "updatedAt": "2026-03-24T10:00:00Z",
-      "items": [
-        {
-          "id": "uuid",
-          "cartId": "uuid",
-          "productId": "uuid",
-          "quantity": 2,
-          "price": 999.00,
-          "totalPrice": 1998.00,
-          "product": {
-            "id": "uuid",
-            "name": "Product Name",
-            "price": 999.00,
-            "stock": 10,
-            "originalPrice": 1499.00,
-            "discountPercentage": 33.3
-          },
-          "variant": null
-        }
-      ]
-    }
+      "appliedCoupon": {
+        "id": "uuid",
+        "code": "SAVE20",
+        "type": "percentage",
+        "value": 20.00,
+        "maxDiscountAmount": 200.00
+      },
+      "items": [...]
+    },
+    "discountAmount": 200.00,
+    "finalPrice": 5799.00
   }
 }
 ```
@@ -235,6 +226,43 @@ curl -X DELETE http://localhost:5000/api/cart/clear \
 #### Error Responses
 - **401**: Unauthorized
 - **404**: Cart not found
+
+---
+
+### 6. Apply Coupon
+**POST** `/api/coupons/apply`
+
+Apply a discount code to the active cart.
+
+#### Request Body
+```json
+{
+  "code": "SAVE20"
+}
+```
+
+#### Response (200 OK)
+```json
+{
+  "status": "success",
+  "message": "Coupon applied successfully"
+}
+```
+
+---
+
+### 7. Remove Coupon
+**DELETE** `/api/coupons/remove`
+
+Remove the applied coupon from the active cart.
+
+#### Response (200 OK)
+```json
+{
+  "status": "success",
+  "message": "Coupon removed from cart"
+}
+```
 
 ---
 

@@ -23,11 +23,42 @@ const Category = sequelize.define("Category", {
     validate: {
       notEmpty: true
     }
+  },
+
+  slug: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+    validate: {
+      notEmpty: true
+    }
+  },
+
+  description: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+
+  image: {
+    type: DataTypes.STRING,
+    allowNull: true
   }
 
 }, {
   tableName: "categories",
-  timestamps: true
+  timestamps: true,
+  hooks: {
+    beforeValidate: (category) => {
+      // Auto-generate slug from name if not provided
+      if (category.name && !category.slug) {
+        category.slug = category.name
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '');
+      }
+    }
+  }
 });
 
 module.exports = Category;

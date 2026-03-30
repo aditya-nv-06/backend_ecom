@@ -8,6 +8,8 @@
 - [x] ShippingAddress.js - Shipping addresses
 - [x] Order.js - Orders model
 - [x] OrderItem.js - Order items model
+- [x] Coupon.js - Discount coupons model
+- [x] CouponUsage.js - Tracking coupon usage
 
 ### ✅ Controllers (3)
 - [x] cartController.js - 5 functions
@@ -34,10 +36,23 @@
   - cancelOrder()
   - getOrderAnalytics()
 
+- [x] paymentController.js - 3 functions
+  - initiatePayment()
+  - handleWebhook()
+  - mockPaymentSuccess()
+
+- [x] couponController.js - 7 functions
+  - applyCoupon()
+  - getAvailableCoupons()
+  - removeCoupon()
+  - CRUD operations (admin)
+
 ### ✅ Routes (3)
 - [x] cartRoutes.js - 5 routes
 - [x] shippingAddressRoutes.js - 6 routes
 - [x] orderRoutes.js - 7 routes
+- [x] paymentRoutes.js - 3 routes
+- [x] couponRoutes.js - 5 routes
 
 ### ✅ Migrations (5)
 - [x] 20260324110000-create-carts.js
@@ -53,6 +68,8 @@
 - [x] IMPLEMENTATION_GUIDE.md - Setup, architecture, and patterns
 - [x] FEATURES_SUMMARY.md - Feature overview and summary
 - [x] QUICKSTART.md - Quick start guide
+- [x] PAYMENT_API.md - Payment API reference
+- [x] COUPON_API.md - Coupon API reference
 
 ### ✅ Updated Files (2)
 - [x] models/index.js - Added models and associations
@@ -85,6 +102,18 @@
 - [x] PATCH /api/orders/:orderId/status
 - [x] PATCH /api/orders/:orderId/payment-status
 - [x] POST /api/orders/:orderId/cancel
+
+### Payment Endpoints (3)
+- [x] POST /api/payment/initiate
+- [x] POST /api/payment/webhook
+- [x] POST /api/payment/mock-success
+
+### Coupon Endpoints (5)
+- [x] POST /api/coupons/apply
+- [x] DELETE /api/coupons/remove
+- [x] GET /api/coupons
+- [x] GET /api/coupons/admin
+- [x] POST /api/coupons/admin
 
 ---
 
