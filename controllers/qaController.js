@@ -1,4 +1,5 @@
-const { Question, Product, User } = require("../models");
+const { Question, Product, User, sequelize } = require("../models");
+const { Op } = require("sequelize");
 const sendResponse = (res, { status = 200, success = true, message = "", data = null, meta = null }) =>
   res.status(status).json({ success, message, data, meta });
 
@@ -74,6 +75,30 @@ const answerQuestion = async (req, res, next) => {
 };
 
 
+const adminAddQA = async (req, res, next) => {
+  try {
+    const { question, answer, productId } = req.body;
+    const adminId = req.user.id;
+
+    if (!question || !answer) {
+      return sendResponse(res, { status: 400, success: false, message: "Question and answer are required" });
+    }
+
+    const newQA = await Question.create({
+      productId: productId || null,
+      userId: adminId,
+      question: question.trim(),
+      answer: answer.trim(),
+      answeredBy: adminId
+    });
+
+    return sendResponse(res, { status: 201, message: "Q&A added by admin", data: newQA });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
 const getProductQuestions = async (req, res, next) => {
   try {
     const { productId } = req.params;
@@ -82,7 +107,12 @@ const getProductQuestions = async (req, res, next) => {
     const offset = (page - 1) * limit;
 
     const { count, rows } = await Question.findAndCountAll({
-      where: { productId },
+      where: {
+        [Op.or]: [
+          { productId },
+          { productId: null }
+        ]
+      },
       include: [
         { model: User, as: "askingUser", attributes: ["id", "name"] },
         { model: User, as: "answeringAdmin", attributes: ["id", "name"] }
@@ -146,4 +176,4 @@ const deleteQuestion = async (req, res, next) => {
   }
 };
 
-module.exports = { askQuestion, answerQuestion, getProductQuestions, updateQuestion, deleteQuestion };
+module.exports = { askQuestion, answerQuestion, adminAddQA, getProductQuestions, updateQuestion, deleteQuestion };

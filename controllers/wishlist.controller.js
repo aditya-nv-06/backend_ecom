@@ -1,4 +1,4 @@
-const { Wishlist, Product, ProductImage } = require("../models");
+const { Wishlist, Product, ProductImage, Category } = require("../models");
 const messages = require('../constants/messages');
 const catchAsync = require('../utils/catchAsync');
 
@@ -32,7 +32,8 @@ const addToWishlist = catchAsync(async (req, res) => {
         as: "wishlistProduct",
         attributes: ["id", "name", "price", "discountPercentage", "rating"],
         include: [
-          { model: ProductImage, as: "images", attributes: ["imageUrl"], limit: 1 }
+          { model: ProductImage, as: "images", attributes: ["imageUrl"], limit: 1 },
+          { model: Category, as: "productCategory", attributes: ["name"] }
         ]
       }
     ]
@@ -46,6 +47,7 @@ const addToWishlist = catchAsync(async (req, res) => {
     product: {
       ...productData,
       discountPrice,
+      category: productData.productCategory?.name || null,
       thumbnail: productData.images?.[0]?.imageUrl || null
     }
   };
@@ -65,7 +67,8 @@ const getWishlistById = catchAsync(async (req, res) => {
         as: "wishlistProduct",
         attributes: ["id", "name", "price", "discountPercentage", "rating"],
         include: [
-          { model: ProductImage, as: "images", attributes: ["imageUrl"], limit: 1 }
+          { model: ProductImage, as: "images", attributes: ["imageUrl"], limit: 1 },
+          { model: Category, as: "productCategory", attributes: ["name"] }
         ]
       }
     ]
@@ -81,6 +84,7 @@ const getWishlistById = catchAsync(async (req, res) => {
     product: {
       ...productData,
       discountPrice,
+      category: productData.productCategory?.name || null,
       thumbnail: productData.images?.[0]?.imageUrl || null
     }
   };
@@ -100,7 +104,8 @@ const getWishlist = catchAsync(async (req, res) => {
         as: "wishlistProduct",
         attributes: ["id", "name", "price", "discountPercentage", "rating"],
         include: [
-          { model: ProductImage, as: "images", attributes: ["imageUrl"], limit: 1 }
+          { model: ProductImage, as: "images", attributes: ["imageUrl"], limit: 1 },
+          { model: Category, as: "productCategory", attributes: ["name"] }
         ]
       }
     ]
@@ -115,6 +120,7 @@ const getWishlist = catchAsync(async (req, res) => {
       product: {
         ...productData,
         discountPrice,
+        category: productData.productCategory?.name || null,
         thumbnail: productData.images?.[0]?.imageUrl || null
       }
     };

@@ -2,11 +2,12 @@ const express = require("express");
 const { body, param, query } = require("express-validator");
 
 const { validate } = require("../middleware/validation.middleware");
-const { protect } = require("../middleware/auth.middleware");
+const { protect, restrictTo } = require("../middleware/auth.middleware");
 
 const {
   askQuestion,
   answerQuestion,
+  adminAddQA,
   getProductQuestions,
   updateQuestion,
   deleteQuestion
@@ -14,10 +15,25 @@ const {
 
 const router = express.Router();
 
+/* ================= ADMIN ADD Q&A ================= */
+
+router.post(
+  "/admin/add",
+  protect,
+  restrictTo("admin"),
+  [
+    body("question").trim().notEmpty().withMessage("Question is required"),
+    body("answer").trim().notEmpty().withMessage("Answer required"),
+    body("productId").optional().isUUID().withMessage("Invalid product ID")
+  ],
+  validate,
+  adminAddQA
+);
+
 /* ================= ASK QUESTION ================= */
 
 router.post(
-  "/:productId/questions",
+  "/product/:productId",
   protect,
   [
     param("productId").isUUID().withMessage("Invalid product ID"),
@@ -30,7 +46,7 @@ router.post(
 /* ================= GET QUESTIONS ================= */
 
 router.get(
-  "/:productId/questions",
+  "/product/:productId",
   [
     param("productId").isUUID().withMessage("Invalid product ID"),
     query("page").optional().isInt({ min: 1 }),
@@ -43,7 +59,7 @@ router.get(
 /* ================= ANSWER QUESTION ================= */
 
 router.post(
-  "/questions/:questionId/answer",
+  "/answer/:questionId",
   protect,
   [
     param("questionId").isUUID().withMessage("Invalid question ID"),
@@ -56,7 +72,7 @@ router.post(
 /* ================= UPDATE QUESTION ================= */
 
 router.put(
-  "/questions/:questionId",
+  "/question/:questionId",
   protect,
   [
     param("questionId").isUUID(),
@@ -69,7 +85,7 @@ router.put(
 /* ================= DELETE QUESTION ================= */
 
 router.delete(
-  "/questions/:questionId",
+  "/question/:questionId",
   protect,
   [
     param("questionId").isUUID()
